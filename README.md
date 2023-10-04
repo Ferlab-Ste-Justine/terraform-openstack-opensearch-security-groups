@@ -20,6 +20,9 @@ The module takes the following variables as input:
 - **client_group_ids**: List of ids of security groups that should have **client** access to the opensearch cluster
 - **bastion_group_ids**: List of ids of security groups that should have **bastion** access to the opensearch cluster
 - **metrics_server_group_ids**: List of ids of security groups that should have **metrics server** access to the opensearch cluster.
+- **fluentd_security_group**: Optional fluentd security group configuration. It has the following keys:
+  - **id**: Id of pre-existing security group to add fluentd rules to
+  - **ports**: List of ports the remote fluentd node listens on
 
 ## Output
 

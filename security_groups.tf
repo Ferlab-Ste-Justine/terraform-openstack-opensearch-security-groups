@@ -165,3 +165,33 @@ resource "openstack_networking_secgroup_rule_v2" "metrics_server_icmp_access_v6"
   remote_group_id   = each.value
   security_group_id = openstack_networking_secgroup_v2.opensearch_member.id
 }
+
+//Grant the opensearch cluster access to the fluentd ports and icmp on a fluentd node
+resource "openstack_networking_secgroup_rule_v2" "opensearch_tcp_access_fluentd" {
+  for_each          = var.fluentd_security_group.id != "" ? { for portx, port in var.fluentd_security_group.ports : portx => port } : {}
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = each.value
+  port_range_max    = each.value
+  remote_group_id   = openstack_networking_secgroup_v2.opensearch_member.id
+  security_group_id = var.fluentd_security_group.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "opensearch_icmp_access_v4" {
+  count             = var.fluentd_security_group.id != "" ? 1 : 0
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "icmp"
+  remote_group_id   = openstack_networking_secgroup_v2.opensearch_member.id
+  security_group_id = var.fluentd_security_group.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "opensearch_icmp_access_v6" {
+  count             = var.fluentd_security_group.id != "" ? 1 : 0
+  direction         = "ingress"
+  ethertype         = "IPv6"
+  protocol          = "ipv6-icmp"
+  remote_group_id   = openstack_networking_secgroup_v2.opensearch_member.id
+  security_group_id = var.fluentd_security_group.id
+}
